@@ -290,39 +290,39 @@ class ShapedPulse(object):
 			print("Call the <calibrate> method to set pulse amplitudes.")
 
 
-	def pulse_relaxation(self, spins):
-		"""
-		Calculate pulse evolution as applied to spin object including relaxation
+	# def pulse_relaxation(self, spins):
+	# 	"""
+	# 	Calculate pulse evolution as applied to spin object including relaxation
 
-		Arguments
-		---------
-		spins : <Spins> object
+	# 	Arguments
+	# 	---------
+	# 	spins : <Spins> object
 
-		Returns
-		-------
-		array: quaternion array
-			evolved spins are returned as a quaternion array and are also 
-			stored in the 'mag' attribute of the 'Spins' object argument
+	# 	Returns
+	# 	-------
+	# 	array: quaternion array
+	# 		evolved spins are returned as a quaternion array and are also 
+	# 		stored in the 'mag' attribute of the 'Spins' object argument
 
-		"""
-		if hasattr(self, 'amplitudes'):
-			incr = self.increment
-			tran_evol = lambda x: x * (1. - spins.r2 * incr)
-			long_evol = lambda x: x - (spins.r1 * incr * (x - spins.ieq))
-			mag = spins.magnetisation
-			for rf in self.amplitudes:
-				beff = (spins.q_offsets + rf) * incr
-				q = np.exp(0.5 * beff)
-				mag = q * mag * np.conjugate(q)
-				mag = quat.as_float_array(mag).T
-				mag[1] = tran_evol(mag[1])
-				mag[2] = tran_evol(mag[2])
-				mag[3] = long_evol(mag[3])
-				mag = quat.as_quat_array(mag.T)
-			return mag
-		else:
-			print("Cannot pulse spins. Pulse calibration is required first:")
-			print("Call the 'calibrate_soft' or 'calibrate_hard' method")
+	# 	"""
+	# 	if hasattr(self, 'amplitudes'):
+	# 		incr = self.increment
+	# 		tran_evol = lambda x: x * (1. - spins.r2 * incr)
+	# 		long_evol = lambda x: x - (spins.r1 * incr * (x - spins.ieq))
+	# 		mag = spins.magnetisation
+	# 		for rf in self.amplitudes:
+	# 			beff = (spins.q_offsets + rf) * incr
+	# 			q = np.exp(-0.5 * beff)
+	# 			mag = q * mag * np.conjugate(q)
+	# 			mag = quat.as_float_array(mag).T
+	# 			mag[1] = tran_evol(mag[1])
+	# 			mag[2] = tran_evol(mag[2])
+	# 			mag[3] = long_evol(mag[3])
+	# 			mag = quat.as_quat_array(mag.T)
+	# 		return mag
+	# 	else:
+	# 		print("Cannot pulse spins. Pulse calibration is required first:")
+	# 		print("Call the 'calibrate_soft' or 'calibrate_hard' method")
 
 
 	def plot_amplitude(self, figure=None):
