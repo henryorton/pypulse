@@ -99,6 +99,10 @@ class Spins(object):
 		"""
 		return quat.as_float_array(self.magnetisation).T[1:].T
 
+	def get_spin_at_ppm(self, ppm_value):
+		i = np.argmin(np.abs(self.get_ppm_scale()-ppm_value))
+		return self.magnetisation[i]
+
 	def plot(self, scale='Hz', figure=None):
 		"""
 		Get a plot object of the current spin magnetisation
@@ -127,8 +131,10 @@ class Spins(object):
 		x, y, z = self.get_spins().T
 		if scale == 'Hz':
 			s = self.get_hz_scale()
+			invert = False
 		elif scale == 'ppm':
 			s = self.get_ppm_scale()
+			invert = True
 		else:
 			raise ValueError("That scale type is not supported. Must be 'Hz' or 'ppm'")
 		ax.plot(s, x, label='x', c='r')
@@ -136,7 +142,8 @@ class Spins(object):
 		ax.plot(s, z, label='z', c='b')
 		ax.set_ylim(-1.1, 1.1)
 		ax.legend()
-		ax.invert_xaxis()
+		if invert:
+			ax.invert_xaxis()
 		ax.set_xlabel("offset /{}".format(scale))
 		if not figure:
 			plt.show(fig)
@@ -273,7 +280,7 @@ class ShapedPulse(object):
 			incr = self.increment
 			for rf in self.amplitudes:
 				beff = (spins.q_offsets + rf) * incr
-				q = np.exp(0.5 * beff) * q
+				q = np.exp(-0.5 * beff) * q
 
 			mag = q * spins.magnetisation * np.conjugate(q)
 			spins.magnetisation = mag
